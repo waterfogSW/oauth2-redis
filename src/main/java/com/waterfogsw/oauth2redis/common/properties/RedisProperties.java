@@ -1,0 +1,18 @@
+package com.waterfogsw.oauth2redis.common.properties;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+@ConstructorBinding
+@ConfigurationProperties(prefix = "spring.redis")
+public class RedisProperties {
+
+  private final String host;
+  private final int port;
+
+}
