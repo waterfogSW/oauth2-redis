@@ -33,7 +33,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    //DB
+    //infra
+    implementation 'io.lettuce:lettuce-core:6.2.0.RELEASE'
+    implementation 'it.ozimov:embedded-redis:0.7.2'
     runtimeOnly 'com.h2database:h2'
 
     //test
