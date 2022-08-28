@@ -14,6 +14,7 @@ public class JwtProperties {
 
   private final String header;
   private final String issuer;
+  private final String prefix;
   private final String clientSecret;
   private final Long accessTokenExpirySeconds;
   private final Long refreshTokenExpirySeconds;

@@ -6,6 +6,7 @@ spring:
 jwt:
   header: Authorization
   issuer: waterfogsw
+  prefix: bearer
   client-secret: ${jwt.token-secret}
   access-token-expiry-seconds: 1800000
   refresh-token-expiry-seconds: 1209600000
