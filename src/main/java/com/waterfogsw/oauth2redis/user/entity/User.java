@@ -58,4 +58,16 @@ public class User {
     return claims;
   }
 
+  public static User createDefaultUser(
+      String username,
+      String profileImgUrl
+  ) {
+    return User
+        .builder()
+        .username(username)
+        .profileImgUrl(profileImgUrl)
+        .role(Role.USER)
+        .build();
+  }
+
 }
