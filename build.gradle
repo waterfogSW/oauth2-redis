@@ -1,7 +1,12 @@
 plugins {
     id 'org.springframework.boot' version '2.7.3'
     id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
     id 'java'
+}
+
+configurations {
+    asciidoctorExtensions
 }
 
 group = 'com.waterfogsw'
@@ -26,6 +31,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.data:spring-data-redis'
+
+    //restdocs
+    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
     //jwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
