@@ -26,8 +26,6 @@ public class WebSecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-        .authorizeRequests()
-        .and()
         /**
          * formLogin, csrf, headers, http-basic, rememberMe, logout filter 비활성화
          */
