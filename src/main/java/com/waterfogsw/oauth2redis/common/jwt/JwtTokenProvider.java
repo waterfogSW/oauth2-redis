@@ -68,8 +68,6 @@ public class JwtTokenProvider {
   }
 
   public boolean validateToken(String token) {
-    Assert.hasText(token, "Token must be provided");
-
     try {
       Jwts
           .parser()
@@ -77,13 +75,13 @@ public class JwtTokenProvider {
           .parseClaimsJws(token);
       return true;
     } catch (SecurityException | MalformedJwtException e) {
-      log.error("Invalid JWT signature");
+      log.info("Invalid JWT signature");
       return false;
     } catch (UnsupportedJwtException e) {
-      log.error("Unsupported JWT token");
+      log.info("Unsupported JWT token");
       return false;
     } catch (IllegalArgumentException e) {
-      log.error("JWT token is invalid");
+      log.info("JWT token is invalid");
       return false;
     }
   }
