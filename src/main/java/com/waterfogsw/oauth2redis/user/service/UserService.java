@@ -3,6 +3,7 @@ package com.waterfogsw.oauth2redis.user.service;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.waterfogsw.oauth2redis.common.jwt.JwtToken;
 import com.waterfogsw.oauth2redis.common.jwt.JwtTokenProvider;
@@ -33,6 +34,7 @@ public class UserService {
     userRepository.save(newUser);
   }
 
+  @Transactional
   public void signin(
       String principal,
       HttpServletResponse response
