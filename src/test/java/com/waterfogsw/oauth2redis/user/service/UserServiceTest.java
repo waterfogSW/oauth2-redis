@@ -3,6 +3,8 @@ package com.waterfogsw.oauth2redis.user.service;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.BDDMockito.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,7 +14,11 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletResponse;
 
+import com.waterfogsw.oauth2redis.common.jwt.JwtToken;
+import com.waterfogsw.oauth2redis.common.jwt.JwtTokenProvider;
+import com.waterfogsw.oauth2redis.common.jwt.JwtTokenRedisRepository;
 import com.waterfogsw.oauth2redis.user.entity.User;
 import com.waterfogsw.oauth2redis.user.repository.UserRepository;
 
@@ -21,6 +27,15 @@ class UserServiceTest {
 
   @Mock
   UserRepository userRepository;
+
+  @Mock
+  UserCrudService userCrudService;
+
+  @Mock
+  JwtTokenProvider jwtTokenProvider;
+
+  @Mock
+  JwtTokenRedisRepository jwtTokenRedisRepository;
 
   @InjectMocks
   UserService userService;
@@ -75,7 +90,66 @@ class UserServiceTest {
 
         //then
         verify(userRepository).save(any(User.class));
+      }
 
+    }
+
+  }
+
+  @Nested
+  @DisplayName("signin 메서드는")
+  class DescribeSignin {
+
+    @Nested
+    @DisplayName("principal이 빈값이면")
+    class ContextWithBlankPrincipal {
+
+      @ParameterizedTest
+      @NullAndEmptySource
+      @DisplayName("IllegalArgumentException 에러를 발생시킨다")
+      void ItThrowsIllegalArgumentException(String src) {
+        //when, then
+        assertThatThrownBy(() -> userService.signin(src, new MockHttpServletResponse()))
+            .isInstanceOf(IllegalArgumentException.class);
+      }
+
+    }
+
+    @Nested
+    @DisplayName("reponse가 null이 전달되면")
+    class ContextWithNullResponse {
+
+      @Test
+      @DisplayName("IllegalArgumentExecption 에러를 발생시킨다")
+      void ItThrowsIllegalArgumentException() {
+        //when, then
+        assertThatThrownBy(() -> userService.signin("test", null))
+            .isInstanceOf(IllegalArgumentException.class);
+      }
+
+    }
+
+    @Nested
+    @DisplayName("유효한 값이 전달되면")
+    class ContextWithValidParametersPassed {
+
+      @Test
+      @DisplayName("accessToken을 헤더에 반환하고, refreshToken을 redis에 저장한다")
+      void ItSetAccessTokenToHeaderAndSaveRefreshToken() {
+        //given
+        JwtToken mockToken = JwtToken.of(1L, "test", 1L);
+        User mockUser = User.createDefaultUser("test", "test");
+
+        given(jwtTokenProvider.createRefreshToken(any(User.class))).willReturn(mockToken);
+        given(jwtTokenProvider.createAccessToken(any(User.class))).willReturn(mockToken);
+        given(userCrudService.findById(anyLong())).willReturn(mockUser);
+
+        //when
+        userService.signin("1", new MockHttpServletResponse());
+
+        //then
+        verify(jwtTokenProvider).setHeaderAccessToken(any(HttpServletResponse.class), anyString());
+        verify(jwtTokenRedisRepository).save(any(JwtToken.class));
       }
 
     }
