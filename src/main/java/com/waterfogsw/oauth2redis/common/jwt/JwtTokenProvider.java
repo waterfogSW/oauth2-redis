@@ -3,6 +3,7 @@ package com.waterfogsw.oauth2redis.common.jwt;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.waterfogsw.oauth2redis.common.properties.JwtProperties;
 import com.waterfogsw.oauth2redis.user.entity.User;
-import com.waterfogsw.oauth2redis.user.service.UserService;
+import com.waterfogsw.oauth2redis.user.service.UserCrudService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -27,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenProvider {
 
   private final JwtProperties jwtProperties;
-  private final UserService userService;
+  private final UserCrudService userCrudService;
 
   public JwtToken createAccessToken(User user) {
     Assert.notNull(user, "User must be provided");
@@ -45,7 +46,7 @@ public class JwtTokenProvider {
     Assert.hasText(token, "Token must be provided");
 
     long userId = Long.parseLong(getUserId(token));
-    User user = userService.findById(userId);
+    User user = userCrudService.findById(userId);
     return JwtAuthenticationToken.of(user, token);
   }
 
@@ -106,6 +107,13 @@ public class JwtTokenProvider {
         .compact();
 
     return JwtToken.of(user.getId(), token, expirySeconds);
+  }
+
+  public void setHeaderAccessToken(
+      HttpServletResponse response,
+      String token
+  ) {
+    response.setHeader(jwtProperties.getHeader(), token);
   }
 
 }

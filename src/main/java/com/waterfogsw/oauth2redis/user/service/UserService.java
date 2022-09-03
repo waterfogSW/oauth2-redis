@@ -1,8 +1,12 @@
 package com.waterfogsw.oauth2redis.user.service;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Service;
 
-import com.waterfogsw.oauth2redis.common.exception.NotFoundException;
+import com.waterfogsw.oauth2redis.common.jwt.JwtToken;
+import com.waterfogsw.oauth2redis.common.jwt.JwtTokenProvider;
+import com.waterfogsw.oauth2redis.common.jwt.JwtTokenRedisRepository;
 import com.waterfogsw.oauth2redis.user.entity.User;
 import com.waterfogsw.oauth2redis.user.repository.UserRepository;
 
@@ -14,12 +18,9 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
   private final UserRepository userRepository;
-
-  public User findById(long id) {
-    return userRepository
-        .findById(id)
-        .orElseThrow(() -> new NotFoundException("User not found"));
-  }
+  private final UserCrudService userCrudService;
+  private final JwtTokenProvider jwtTokenProvider;
+  private final JwtTokenRedisRepository jwtTokenRedisRepository;
 
   public void signup(
       String username,
