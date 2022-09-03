@@ -1,6 +1,5 @@
 package com.waterfogsw.oauth2redis.user.controller;
 
-import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -14,9 +13,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,11 +21,9 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.waterfogsw.oauth2redis.common.config.WebSecurityConfig;
 import com.waterfogsw.oauth2redis.common.jwt.JwtTokenProvider;
@@ -62,7 +57,6 @@ class UserApiControllerTest {
     class ContextWith {
 
       @Test
-      @WithMockUser
       @DisplayName("Created 응답을 반환한다")
       void ItResponseCreated() throws Exception {
         //given
@@ -159,6 +153,7 @@ class UserApiControllerTest {
       }
 
     }
+
   }
 
 }
