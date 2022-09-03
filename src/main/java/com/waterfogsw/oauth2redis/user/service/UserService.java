@@ -32,4 +32,21 @@ public class UserService {
     userRepository.save(newUser);
   }
 
+  public void signin(
+      String principal,
+      HttpServletResponse response
+  ) {
+    Assert.hasText(principal, "Principal must be provided");
+    Assert.notNull(response, "Response must be provided");
+
+    long userId = Long.parseLong(principal);
+    User user = userCrudService.findById(userId);
+
+    JwtToken accessToken = jwtTokenProvider.createAccessToken(user);
+    JwtToken refreshToken = jwtTokenProvider.createRefreshToken(user);
+
+    jwtTokenProvider.setHeaderAccessToken(response, accessToken.getToken());
+    jwtTokenRedisRepository.save(refreshToken);
+  }
+
 }
