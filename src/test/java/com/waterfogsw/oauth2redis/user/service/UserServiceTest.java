@@ -26,6 +26,9 @@ import com.waterfogsw.oauth2redis.user.repository.UserRepository;
 class UserServiceTest {
 
   @Mock
+  HttpServletResponse response;
+
+  @Mock
   UserRepository userRepository;
 
   @Mock
@@ -134,7 +137,7 @@ class UserServiceTest {
     class ContextWithValidParametersPassed {
 
       @Test
-      @DisplayName("accessToken을 헤더에 반환하고, refreshToken을 redis에 저장한다")
+      @DisplayName("accessToken과 refreshToken을 헤더에 반환하고, refreshToken을 redis에 저장한다")
       void ItSetAccessTokenToHeaderAndSaveRefreshToken() {
         //given
         JwtToken mockToken = JwtToken.of(1L, "test", 1L);
@@ -145,10 +148,10 @@ class UserServiceTest {
         given(userCrudService.findById(anyLong())).willReturn(mockUser);
 
         //when
-        userService.signin("1", new MockHttpServletResponse());
+        userService.signin("1", response);
 
         //then
-        verify(jwtTokenProvider).setHeaderAccessToken(any(HttpServletResponse.class), anyString());
+        verify(response, times(2)).setHeader(anyString(), anyString());
         verify(jwtTokenRedisRepository).save(any(JwtToken.class));
       }
 

@@ -12,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 @ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
 
-  private final String header;
+  private final String accessTokenHeader;
+  private final String refreshTokenHeader;
   private final String issuer;
   private final String prefix;
   private final String clientSecret;

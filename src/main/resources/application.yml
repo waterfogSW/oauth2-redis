@@ -6,7 +6,8 @@ spring:
     port: 6379
 
 jwt:
-  header: Authorization
+  access-token-header: AccessToken
+  refresh-token-header: RefreshToken
   issuer: waterfogsw
   prefix: bearer
   client-secret: ${jwt.token-secret}

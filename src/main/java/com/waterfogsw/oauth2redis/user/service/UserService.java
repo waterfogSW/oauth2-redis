@@ -48,7 +48,9 @@ public class UserService {
     JwtToken accessToken = jwtTokenProvider.createAccessToken(user);
     JwtToken refreshToken = jwtTokenProvider.createRefreshToken(user);
 
-    jwtTokenProvider.setHeaderAccessToken(response, accessToken.getToken());
+    response.setHeader("AccessToken", accessToken.getToken());
+    response.setHeader("RefreshToken", refreshToken.getToken());
+
     jwtTokenRedisRepository.save(refreshToken);
   }
 

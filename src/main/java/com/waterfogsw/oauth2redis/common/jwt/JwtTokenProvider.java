@@ -3,7 +3,6 @@ package com.waterfogsw.oauth2redis.common.jwt;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -61,7 +60,7 @@ public class JwtTokenProvider {
   }
 
   public String resolveAccessToken(HttpServletRequest request) {
-    String bearerToken = request.getHeader(jwtProperties.getHeader());
+    String bearerToken = request.getHeader(jwtProperties.getAccessTokenHeader());
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(jwtProperties.getPrefix())) {
       return bearerToken.substring(7);
     }
@@ -107,13 +106,6 @@ public class JwtTokenProvider {
         .compact();
 
     return JwtToken.of(user.getId(), token, expirySeconds);
-  }
-
-  public void setHeaderAccessToken(
-      HttpServletResponse response,
-      String token
-  ) {
-    response.setHeader(jwtProperties.getHeader(), token);
   }
 
 }
