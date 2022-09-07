@@ -159,4 +159,77 @@ class UserServiceTest {
 
   }
 
+  @Nested
+  @DisplayName("reissue 메서드는")
+  class DescribeReissue {
+
+    @Nested
+    @DisplayName("principal 이 빈값이 전달되면")
+    class ContextWithBlankPrincipalPassed {
+
+      @ParameterizedTest
+      @NullAndEmptySource
+      @DisplayName("IllegalArgumentException 에러를 발생시킨다")
+      void ItResponseIllegalArgumentException(String src) {
+        //when, then
+        assertThatThrownBy(() -> userService.reissue(src, "test", new MockHttpServletResponse()))
+            .isInstanceOf(IllegalArgumentException.class);
+      }
+
+    }
+
+    @Nested
+    @DisplayName("refreshToken 이 빈값이 전달되면")
+    class ContextWithBlankRefreshTokenPassed {
+
+      @ParameterizedTest
+      @NullAndEmptySource
+      @DisplayName("IllegalArgumentException 에러를 발생시킨다")
+      void ItResponseIllegalArgumentException(String src) {
+        //when, then
+        assertThatThrownBy(() -> userService.reissue("1L", src, new MockHttpServletResponse()))
+            .isInstanceOf(IllegalArgumentException.class);
+      }
+
+    }
+
+    @Nested
+    @DisplayName("response 이 null값이 전달되면")
+    class ContextWithNullResponsePassed {
+
+      @Test
+      @DisplayName("IllegalArgumentException 에러를 발생시킨다")
+      void ItResponseIllegalArgumentException() {
+        //when, then
+        assertThatThrownBy(() -> userService.reissue("1L", "test", null))
+            .isInstanceOf(IllegalArgumentException.class);
+      }
+
+    }
+
+    @Nested
+    @DisplayName("유효한 값이 전달되면")
+    class ContextWithValidParameterPassed {
+
+      @Test
+      @DisplayName("헤더를 통해 accessToken을 반환한다")
+      void ItReturnAccessTokenByHeader() {
+        //given
+        JwtToken mockToken = JwtToken.of(1L, "test", 1L);
+        User mockUser = User.createDefaultUser("test", "test");
+
+        given(jwtTokenProvider.createAccessToken(any(User.class))).willReturn(mockToken);
+        given(userCrudService.findById(anyLong())).willReturn(mockUser);
+
+        //when
+        userService.reissue("1", "test", response);
+
+        //then
+        verify(response, times(1)).setHeader(anyString(), anyString());
+      }
+
+    }
+
+  }
+
 }
