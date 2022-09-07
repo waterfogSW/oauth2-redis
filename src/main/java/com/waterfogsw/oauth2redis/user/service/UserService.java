@@ -54,4 +54,23 @@ public class UserService {
     jwtTokenRedisRepository.save(refreshToken);
   }
 
+  public void reissue(
+      String principal,
+      String refreshToken,
+      HttpServletResponse response
+  ) {
+    Assert.hasText(principal, "Principal must be provided");
+    Assert.hasText(refreshToken, "Refresh token must be provided");
+    Assert.notNull(response, "Response must be provided");
+
+    jwtTokenProvider.validateToken(refreshToken);
+
+    long userId = Long.parseLong(principal);
+    User user = userCrudService.findById(userId);
+
+    JwtToken accessToken = jwtTokenProvider.createAccessToken(user);
+
+    response.setHeader("AccessToken", accessToken.getToken());
+  }
+
 }
