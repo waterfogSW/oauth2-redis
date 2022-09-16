@@ -30,14 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletResponse response,
       FilterChain filterChain
   ) throws ServletException, IOException {
-    String path = request.getServletPath();
+    String accessToken = jwtTokenProvider.resolveAccessToken(request);
 
-    if (path.startsWith("/api/auth/reissue")) {
+    if (accessToken == null) {
       filterChain.doFilter(request, response);
       return;
     }
-
-    String accessToken = jwtTokenProvider.resolveAccessToken(request);
 
     try {
       boolean isValidToken = jwtTokenProvider.validateToken(accessToken);
