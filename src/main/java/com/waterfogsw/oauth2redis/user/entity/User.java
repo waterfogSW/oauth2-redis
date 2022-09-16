@@ -1,5 +1,6 @@
 package com.waterfogsw.oauth2redis.user.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,6 +34,11 @@ public class User {
 
   @Enumerated(EnumType.STRING)
   private Role role;
+
+  @Enumerated(EnumType.STRING)
+  private Provider provider;
+
+  private String providerId;
 
   @Builder
   public User(
