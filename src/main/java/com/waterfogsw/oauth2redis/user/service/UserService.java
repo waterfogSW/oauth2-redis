@@ -2,12 +2,14 @@ package com.waterfogsw.oauth2redis.user.service;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.waterfogsw.oauth2redis.common.jwt.JwtToken;
 import com.waterfogsw.oauth2redis.common.jwt.JwtTokenProvider;
 import com.waterfogsw.oauth2redis.common.jwt.JwtTokenRedisRepository;
+import com.waterfogsw.oauth2redis.user.entity.Provider;
 import com.waterfogsw.oauth2redis.user.entity.User;
 import com.waterfogsw.oauth2redis.user.repository.UserRepository;
 
@@ -23,15 +25,18 @@ public class UserService {
   private final JwtTokenProvider jwtTokenProvider;
   private final JwtTokenRedisRepository jwtTokenRedisRepository;
 
-  public void signup(
-      String username,
-      String profileImgUrl
+  public User signup(
+      OAuth2User oAuth2User,
+      String provider
   ) {
-    Assert.hasText(username, "Username must be provided");
-    Assert.hasText(profileImgUrl, "ProfileImgUrl must be provided");
+    Assert.notNull(oAuth2User, "OAuth2User must be provided");
+    Assert.hasText(provider, "Provider must be provided");
 
-    User newUser = User.createDefaultUser(username, profileImgUrl);
-    userRepository.save(newUser);
+    String providerId = oAuth2User.getName();
+
+    return userRepository
+        .findByProviderAndProviderId(Provider.valueOf(provider), providerId)
+        .orElseGet(() -> createUser(oAuth2User, Provider.valueOf(provider)));
   }
 
   @Transactional
@@ -71,6 +76,13 @@ public class UserService {
     JwtToken accessToken = jwtTokenProvider.createAccessToken(user);
 
     response.setHeader("AccessToken", accessToken.getToken());
+  }
+
+  private User createUser(
+      OAuth2User oAuth2User,
+      Provider provider
+  ) {
+    return userRepository.save(User.createDefaultUser(oAuth2User, provider));
   }
 
 }

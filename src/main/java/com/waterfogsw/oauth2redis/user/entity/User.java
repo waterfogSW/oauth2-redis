@@ -1,5 +1,7 @@
 package com.waterfogsw.oauth2redis.user.entity;
 
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,10 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.lang.Assert;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +32,7 @@ public class User {
   @Length(min = 1, max = 200)
   private String username;
 
+  @Column(length = 512)
   private String profileImgUrl;
 
   @Enumerated(EnumType.STRING)
@@ -38,20 +41,22 @@ public class User {
   @Enumerated(EnumType.STRING)
   private Provider provider;
 
+  @Column(length = 80)
   private String providerId;
 
   @Builder
   public User(
       String username,
       String profileImgUrl,
-      Role role
+      Role role,
+      Provider provider,
+      String providerId
   ) {
-    Assert.hasText(username, "Username must be provided");
-    Assert.notNull(role, "Role must be provided");
-
     this.username = username;
     this.profileImgUrl = profileImgUrl;
     this.role = role;
+    this.provider = provider;
+    this.providerId = providerId;
   }
 
   public Claims getClaims() {
@@ -65,14 +70,21 @@ public class User {
   }
 
   public static User createDefaultUser(
-      String username,
-      String profileImgUrl
+      OAuth2User oAuth2User,
+      Provider provider
   ) {
+    Map<String, Object> attributes = oAuth2User.getAttributes();
+
+    String providerId = oAuth2User.getName();
+    String username = (String)attributes.get("name");
+    String profileImage = (String)attributes.get("picture");
+
     return User
         .builder()
         .username(username)
-        .profileImgUrl(profileImgUrl)
-        .role(Role.USER)
+        .profileImgUrl(profileImage)
+        .provider(provider)
+        .providerId(providerId)
         .build();
   }
 
