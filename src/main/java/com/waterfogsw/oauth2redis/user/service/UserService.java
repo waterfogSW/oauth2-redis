@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.waterfogsw.oauth2redis.common.jwt.JwtToken;
 import com.waterfogsw.oauth2redis.common.jwt.JwtTokenProvider;
@@ -39,16 +38,12 @@ public class UserService {
         .orElseGet(() -> createUser(oAuth2User, Provider.valueOf(provider)));
   }
 
-  @Transactional
   public void signin(
-      String principal,
+      User user,
       HttpServletResponse response
   ) {
-    Assert.hasText(principal, "Principal must be provided");
+    Assert.notNull(user, "User must be provided");
     Assert.notNull(response, "Response must be provided");
-
-    long userId = Long.parseLong(principal);
-    User user = userCrudService.findById(userId);
 
     JwtToken accessToken = jwtTokenProvider.createAccessToken(user);
     JwtToken refreshToken = jwtTokenProvider.createRefreshToken(user);
